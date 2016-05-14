@@ -1,502 +1,305 @@
-.data 
-
-line00: .asciiz "                                           ************* "
-line01: .asciiz "**************                            *3333333333333*"
-line02: .asciiz "*222222222222222*                         *33333******** "
-line03: .asciiz "*22222******222222*                       *33333*        "
-line04: .asciiz "*22222*      *22222*                      *33333******** "
-line05: .asciiz "*22222*       *22222*      *************  *3333333333333*"
-line06: .asciiz "*22222*       *22222*  l **11111*****111* *33333******** "
-line07: .asciiz "*22222*       *22222*  **1111**       **  *33333*        "
-line08: .asciiz "*22222*      *222222*  *1111*             *33333******** "
-line09: .asciiz "*22222*******222222*  *11111*             *3333333333333*"
-line10: .asciiz "*2222222222222222*    *11111*              ************* "
-line11: .asciiz "***************       *11111*                            "
-line12: .asciiz "      ---              *1111**                           "	
-line13: .asciiz "    / o o \\             *1111****   *****               "
-line14: .asciiz "    \\  >  /              **111111***111*                "
-line15: .asciiz "     -----                 ***********    dce.hust.edu.vn"
-
-menu:	.asciiz "\n  1. Show DCE.\n  2. Delete Color.\n  3. Change position ECD.\n  4. Change color.\n >>> Chose function\n\n"
-chose:	.asciiz "Please chose function :"
-error:	.asciiz "Please try again!" 
-
-arr :	.space 100
-
+.data
+	
+	line00: 	.asciiz "                                                          *************  \n "
+	line01: 	.asciiz "**************                                           *3333333333333* \n "
+	line02: 	.asciiz "*222222222222222*                                        *33333********  \n "
+	line03: 	.asciiz "*22222******222222*                                      *33333*         \n "
+   	line04: 	.asciiz "*22222*      *22222*                                     *33333********  \n "
+	line05: 	.asciiz "*22222*       *22222*        *************               *3333333333333* \n "
+	line06: 	.asciiz "*22222*       *22222*      **11111*****111*              *33333********  \n "
+	line07: 	.asciiz "*22222*       *22222*    **11111****                     *33333*         \n "
+	line08: 	.asciiz "*22222*       *22222*    *11111*                         *33333********  \n "
+	line09:	.asciiz "*22222*******222222*     *11111*                         *3333333333333* \n "
+	line10:	.asciiz "*2222222222222222*       *11111*                          *************  \n "
+	line11:	.asciiz "***************          *11111*                                         \n "
+	line12:	.asciiz "   -----                 *11111*                                         \n "
+	line13:	.asciiz "  /  o o \\               *11111*********                                 \n "
+	line14:	.asciiz "  \\    > /                 **111111***111*                               \n "
+	line15:	.asciiz "   -----                      ***********                dce.hust.edu.vn \n "
+endofline: .asciiz "\n"
+	
+ms1:	.asciiz " \n Input Color of D (0->9) : "
+ms2:	.asciiz	" \n Input Color of C (0->9) : "
+ms3:	.asciiz	" \n Input Color of E (0->9) : "
+	
+menu:	.asciiz "\n1. Show Image.\n2. Delete Color.\n3. Change Position.\n4. Change Color.\n5. Exit.\n>>> Chose Function: "
 .text
+#--------------------------------------------------------------------------------------------	
+#define
+	la	$s0, line00			# $s0 chua dia chi cua xau a1
+	la	$s1, line15			# $s1 chua dia chi cua xau a16
+	
+	
+	li	$s2, '2'			# ki tu mau chu D
+	li	$s3, '1'			# ki tu mau chu E
+	li	$s4, '3'			# ki tu mau chu C
+#---------------------------------------------------------------------------------------------		
+	
+#in MENU
 
-Start:
-	jal	LoadImage
-	la	$s0, arr
-
-Menu:
-	li	$v0, 4				# Print menu
+MENU:
+	li	$v0, 4
 	la	$a0, menu
 	syscall
 	
-	li   	$v0, 51				# Show dialog for chose function
-	la   	$a0, chose
+	li	$v0, 12				# Nhap lua chon
 	syscall
-	# check input
-	beq	$a1, -1, Menu			# if not integer
-	beq	$a1, -2, ExitProgram			# if cancel, Exit program
-	beq	$a1, -3, Menu			# if Ok without number, input again
+	move	$t9, $v0			# t9 chua lua chon 
 	
-	slti 	$t1, $a0, 5			# if v0 < 5, t1 = 1 else t1 = 0
-	slti	$t2, $a0, 1   			# if v0 < 1, t2 = 1 else t2 = 0	
-	beqz 	$t1, Menu			# if t1 = 0 ( > 4) try input again
-	bnez 	$t2, Menu			# if t2 = 1 (< 0)  try input again
-	move 	$t9, $a0			# t9 = a0 = (function was chosen)	
-	 
-	Case1:
-		bne	$t9, 1, Case2
-		jal	Reset
-		add	$a0, $s0, $zero
-		jal	ShowImage
-		j 	Menu
-	Case2:
-		bne	$t9, 2, Case3
-	Case3:
-		bne	$t9, 3, Case4
-	Case4:
-		
+	beq	$t9, '5', EXIT
+	beq	$t9, '1', Case1
+	beq	$t9, '2', Case2
+	beq	$t9, '3', Case3
+	beq	$t9, '4', Case4	
 	
+	j MENU
+#-----------------------------------------------------------------------------------------------
+
+Case1:						# in anh			
 	
-	j	ExitProgram
+	li 	$v0, 4				# in messsage1
+	la 	$a0, endofline
+	syscall
 	
-LoadImage:
-	la	$t0, arr
+	jal 	print				# goi thu tuc in 
+	j MENU
 	
-	la	$t1, line00
-	sb	$t1, 0($t0)
-	la	$t1, line01
-	sb	$t1, 4($t0)
-	la	$t1, line02
-	sb	$t1, 8($t0)
-	la	$t1, line03
-	sb	$t1, 12($t0)
-	la	$t1, line04
-	sb	$t1, 16($t0)
-	la	$t1, line05
-	sb	$t1, 20($t0)
-	la	$t1, line06
-	sb	$t1, 24($t0)
-	la	$t1, line07
-	sb	$t1, 28($t0)
-	la	$t1, line08
-	sb	$t1, 32($t0)
-	la	$t1, line09
-	sb	$t1, 36($t0)
-	la	$t1, line10
-	sb	$t1, 40($t0)
-	la	$t1, line11
-	sb	$t1, 44($t0)
-	la	$t1, line12
-	sb	$t1, 48($t0)
-	la	$t1, line13
-	sb	$t1, 52($t0)
-	la	$t1, line14
-	sb	$t1, 56($t0)
-	la	$t1, line15
-	sb	$t1, 60($t0)
+print:						# thu tuc in 		
+	move 	$t0, $s0			# in xau a1->a16
+	
+loop:				
+	li 	$v0, 4
+	move 	$a0, $t0
+	syscall
+	
+	addi 	$t0, $t0, 76	# in xau tiep theo
+	ble 	$t0, $s1, loop	# in den xau cuoi thi dung	
 	
 	jr 	$ra
+#-----------------------------------------------------------------------------------------------------
+Case2:				# xoa mau
+
+	li 	$v0, 4		# in ra message2
+	la	$a0, endofline
+	syscall
 	
-ShowImage:
-	addi	$sp, $sp, -4
-	sw	$ra, 0($sp)
-	add	$t0, $zero, $a0
-	li	$t1, 0
-	li	$t2, 16
-	ShowImage_Loop_1:
-		slt 	$t3, $t1, $t2		
-		beq 	$t3, $zero, ShowImage_Exit_Loop_1
-		sll	$t3, $t1, 2			
-		add	$t3, $t3,$t0		
-		lw 	$a0, 0($t3)			
-		#jal	printf
-		li 	$a0, '\n'
-		#jal 	putchar			
-		addi 	$t1, $t1, 1
-		j 	ShowImage_Loop_1
-	ShowImage_Exit_Loop_1:
-		lw 	$ra, 0($sp)
-		addi 	$sp, $sp, 4
-		jr 	$ra
-DeleteColor:
-	add	$t0, $zero, $a0
-	li	$t1, 0
-	li	$t2, 16
+	move 	$t8, $s0	# t8 chua dia chi xau dau tien
 	
-	DeleteColor_Loop_1:
-		slt	$t3, $t1, $t2
-		beq	$t3, $zero, DeleteColor_Exit_Loop_1
-		sll	$t3, $t1, 2
-		add	$t3, $t3, $t0
-		lw	$t3, 0($t3)
+loop2:	
+	move 	$t0, $t8	
+	li	$t7, 0		# $t7 = i, i = 0
 	
-	DeleteColor_Loop_2:
-		lb	$t4, 0($t3)
-		beq	$t4, 0, DeleteColor_Exit_Loop_2
-		blt	$t4, 0, Continue
-		bgt	$t4, 9, Continue
-		li	$t4, ' '
-		sb	$t4, 0($t3)
+x:	lb 	$t3, 0($t0)	# t3 chua ki tu trong xau
+	
+	
+	beq	$t3, $s2, inspace# kiem tra neu la ki tu mau thi in ra space
+	beq	$t3, $s3, inspace
+	beq	$t3, $s4, inspace
+	
+in:  				# in ki tu khong phai ki tu mau	
+	li	$v0,11
+	move	$a0, $t3
+	syscall
+	j next
+	
+inspace:			# in space
+	li 	$t4, ' '
+	li	$v0,11
+	move	$a0,$t4 
+	syscall
+next:	
+	addi 	$t7, $t7, 1	# i = i + 1
+	addi	$t0, $t0, 1	# duyet ki tu tiep thep
+	ble 	$t7, 75, x	# duyet den ki tu cuoi
+	
+	
+	addi 	$t8, $t8, 76	# duyet den xau tiep theo
+	ble 	$t8, $s1, loop2
+	
+	j MENU
+#---------------------------------------------------------------------------------------------------------------- 	
+Case3:				# dao chu
+	li 	$v0, 4			# in ra message2
+	la	$a0, endofline
+	syscall
+	
 		
-	Continue:
-		addi	$t3, $t3, 1
-		j 	DeleteColor_Loop_2
+# chinh sua	
+	move	$t8, $s0	# t8 chua dia chi xau dau tien
+loopx:
+	li	$t0, '\0'	# them ki tu ket thuc
+	sb 	$t0, 23($t8)
+	sb	$t0, 48($t8)
 	
-	DeleteColor_Exit_Loop_2:
-		addi	$t1, $t1, 1
-		j	DeleteColor_Loop_1
-	DeleteColor_Exit_Loop_1:
-		jr	$ra
-ChangeColor:
-	#line01
-		lb $t0,4($a0)			
-		addi $t1,$t0,42
-		addi $t2,$t0,55
-	line01e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done01e
-		j line01e
-	done01e:
+	li	$t1, ' '	# xoa ki tu  enter
+	sb	$t1, 73($t8)
 	
-	#line02
-		lw $t0,8($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,15
-	line02d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done02d
-		j line02d
-	done02d:
-		addi $t1,$t0,42
-		addi $t2,$t0,47
-	line02e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done02e
-		j line02e
-	done02e:
+	addi 	$t8, $t8, 76	# duyet den xau tiep theo
+	ble 	$t8, $s1, loopx
 	
-	#line03
-		lw $t0,12($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,5
-	line03d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done03d
-		j line03d
-	done03d:
-		addi $t1,$t0,11
-		addi $t2,$t0,17
-	line03d1:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done03d1
-		j line03d1
-	done03d1:
-		addi $t1,$t0,42
-		addi $t2,$t0,47
-	line03e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done03e
-		j line03e
-	done03e:
+# in anh
+	move	$t8, $s0
 	
-	#line04
-		lw $t0,16($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,5
-	line04d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done04d
-		j line04d
-	done04d:
-		addi $t1,$t0,13
-		addi $t2,$t0,18
-	line04d1:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done04d1
-		j line04d1
-	done04d1:
-		addi $t1,$t0,42
-		addi $t2,$t0,47
-	line04e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done04e
-		j line04e
-	done04e:
+loop3:				
 	
-	#line05
-		lw $t0,20($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,5
-	line05d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done05d
-		j line05d
-	done05d:
-		addi $t1,$t0,14
-		addi $t2,$t0,19
-	line05d1:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done05d1
-		j line05d1
-	done05d1:
-  	  addi $t1,$t0,42
-		addi $t2,$t0,55
-	line05e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done05e
-		j line05e
-	done05e: 
 	
-	#line06
-		lw $t0,24($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,5
-	line06d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done06d
-		j line06d
-	done06d:
-		addi $t1,$t0,14
-		addi $t2,$t0,19
-	line06d1:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done06d1
-		j line06d1
-	done06d1:
-		addi $t1,$t0,26
-		addi $t2,$t0,31
-	line06c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done06c
-		j line06c
-	done06c:
-   	 addi $t1,$t0,36
-		addi $t2,$t0,39
-	line06c1:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done06c1
-		j line06c1    
-	done06c1:        
-  	  addi $t1,$t0,42
-		addi $t2,$t0,47
-	line06e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done06e
-		j line06e
-	done06e:    
+# in E	
+	addi	$t8,$t8, 49		
 	
-	#line07
-		lw $t0,28($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,5
-	line07d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done07d
-		j line07d
-	done07d:
-			addi $t1,$t0,14
-		addi $t2,$t0,19
-	line07d1:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done07d1
-		j line07d1
-	done07d1:
-		addi $t1,$t0,24
-		addi $t2,$t0,28
-	line07c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done07c
-		j line07c
-	done07c:     
-    	addi $t1,$t0,42
-		addi $t2,$t0,47
-	line07e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done07e
-		j line07e
-	done07e:  
+	li 	$v0,4
+	move 	$a0, $t8
+	syscall
 	
-	#line08
-		lw $t0,32($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,5
-	line08d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done08d
-		j line08d
-	done08d:
-		addi $t1,$t0,13
-		addi $t2,$t0,19
-	line08d1:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done08d1
-		j line08d1
-	done08d1:
-		addi $t1,$t0,23
-		addi $t2,$t0,27
-	line08c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done08c
-		j line08c
-	done08c:     
-  	  addi $t1,$t0,42
-		addi $t2,$t0,47
-	line08e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done08e
-		j line08e
-	done08e:
+#in C
+	addi	$t8,$t8,-49
+	addi	$t8,$t8, 24
 	
-	#line09
-		lw $t0,36($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,5
-	line09d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done09d
-		j line09d
-	done09d:
-		addi $t1,$t0,12
-		addi $t2,$t0,18
-	line09d1:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done09d1
-		j line09d1
-	done09d1:
-		addi $t1,$t0,22
-		addi $t2,$t0,27
-	line09c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done09c
-		j line09c
-	done09c:     
-   	 addi $t1,$t0,42
-		addi $t2,$t0,55
-	line09e:
-		addi $t1,$t1,1
-		sb $a3,0($t1)
-		beq $t1,$t2,done09e
-		j line09e
-	done09e:       
+	li 	$v0,4
+	move 	$a0, $t8
+	syscall
 	
-	#line10
-		lw $t0,40($a0)
-		addi $t1,$t0,0
-		addi $t2,$t0,16
-	line10d:
-		addi $t1,$t1,1
-		sb $a1,0($t1)
-		beq $t1,$t2,done10d
-		j line10d
-	done10d:
-		addi $t1,$t0,22
-		addi $t2,$t0,27
-	line10c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done10c
-		j line10c
-	done10c:  
-	   
-	#line11
-		lw $t0,44($a0)
-		addi $t1,$t0,22
-		addi $t2,$t0,27
-	line11c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done11c
-		j line11c
-	done11c:     
+#in D
+	addi	$t8,$t8,-24
 	
-	#line12
-		lw $t0,48($a0)
-		addi $t1,$t0,23
-		addi $t2,$t0,27
-	line12c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done12c
-		j line12c
-	done12c: 
+	li 	$v0,4
+	move 	$a0, $t8
+	syscall
+	
+	
+#in enter
+	li	$v0,11
+	li	$a0, '\n'
+	syscall
+	
 
-	#line13
-		lw $t0,52($a0)
-		addi $t1,$t0,24
-		addi $t2,$t0,28
-	line13c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done13c
-		j line13c
-	done13c:  	
+	addi 	$t8, $t8, 76	# duyet tat ca cac xau 
+	ble 	$t8, $s1, loop3
 	
-	#line14
-		lw $t0,56($a0)
-		addi $t1,$t0,26
-		addi $t2,$t0,32
-	line14c:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done14c
-		j line14c
-	done14c:  
-		addi $t1,$t0,35
-		addi $t2,$t0,38
-	line14c1:
-		addi $t1,$t1,1
-		sb $a2,0($t1)
-		beq $t1,$t2,done14c1
-		j line14c1
-	done14c1:	
+# reset
 
-		jr $ra
-Reset:
-	addi	$sp, $sp, -4
-	sb	$ra, 0($sp)
+	move	$t8, $s0	# t8 chua dia chi xau dau tien
+loopxx:
+	li	$t0, ' '	# xoa ki tu ket thuc
+	sb 	$t0, 23($t8)
+	sb	$t0, 48($t8)
 	
-	add 	$a0, $s0, $zero
-	li	$a1, 2					# return 2 to D
-	li	$a2, 1					# return 1 to C
-	li	$a3, 3					# return 3 to E
-	jal	ChangeColor
+	li	$t1, '\n'	# khoi phuc ki tu  enter
+	sb	$t1, 73($t8)
 	
-	lw	$ra, 0($sp)
-	addi	$sp, $sp, 4
-	jr	$ra
+	addi 	$t8, $t8, 76	# duyet den xau tiep theo
+	ble 	$t8, $s1, loopxx
+
 	
-ExitProgram:
-	     
+	j MENU
+#-------------------------------------------------------------------------------------------------------------------
+Case4:				# doi mau
+
+
+# nhap mau cho chu D
+nhapD:
+	li 	$v0, 4		#in message3
+	la 	$a0, ms1
+	syscall
+	
+	
+	li 	$v0, 12		# s5 chua ki tu mau cua chu D
+	syscall
+	move	 $s5, $v0
+	
+	blt	$s5, '0', nhapD	# kt ki tu mau 0->9
+	bgt	$s5, '9', nhapD
+	
+# nhap mau cho chu C	
+nhapC:
+
+	li 	$v0, 4
+	la 	$a0, ms2
+	syscall
+	
+	li	$v0, 12		# s6 chua ki tu mau cua chu C
+	syscall
+	move	$s6, $v0
+	
+	blt	$s6, '0', nhapC	# kt ki tu mau 0->9
+	bgt	$s6, '9', nhapC
+	
+# nhap mau cho chu E
+nhapE:
+	li	$v0, 4
+	la	$a0, ms3
+	syscall
+	
+	li	$v0, 12		# s7 chua ki tu mau cua chu E
+	syscall
+	move	$s7, $v0
+	
+	blt	$s7, '0', nhapE	# kt ki tu mau 0->9
+	bgt	$s7, '9', nhapE
+	
+# in message4
+	li 	$v0, 4		
+	la 	$a0, endofline
+	syscall	
+	
+# bat dau doi mau
+
+	move 	$t8, $s0	# t8 chua dia chi xau dau tien
+	
+loop4:	
+	move 	$t0, $t8	
+	li	$t7, 0		# $t7 = i, i = 0
+	
+x4:	
+	lb 	$t3, 0($t0)	# t3 chua ki tu trong xau
+
+checkD:	
+	bgt	$t7, 23, checkC	# i > 23 thi kt C
+	beq	$t3, $s2, fixD
+	
+checkC:
+	bgt	$t7, 48, checkE	# i > 48 thi kt E
+	beq	$t3, $s3, fixC
+
+checkE:
+	beq	$t3, $s4, fixE
+	j 	next4		# duyet ki tu tiep theo
+	
+fixD:  		
+	sb 	$s5, 0($t0)
+	j next4
+	
+	
+fixC:
+	sb 	$s6, 0($t0)
+	j next4
+	
+fixE:	
+	sb 	$s7, 0($t0)
+	j next4
+	
+next4:	
+	addi 	$t7, $t7, 1	# i = i + 1
+	addi	$t0, $t0, 1	# duyet ki tu tiep thep
+	ble 	$t7, 75, x4	# duyet den ki tu cuoi
+			
+	
+	addi 	$t8, $t8, 76	# duyet den xau tiep theo
+	ble 	$t8, $s1, loop4
+	
+	jal 	print		# goi thu stuc print
+
+# update ki tu mau
+
+	move	$s2, $s5
+	move	$s3, $s6
+	move	$s4, $s7
+		
+				
+	j MENU
+
+
+EXIT:
+
+	
+	
+	
