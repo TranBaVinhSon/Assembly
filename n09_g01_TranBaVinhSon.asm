@@ -1,54 +1,70 @@
 .data
-	line00: 	.asciiz "                                                          *************  \n "
-	line01: 	.asciiz "**************                                           *3333333333333* \n "
-	line02: 	.asciiz "*222222222222222*                                        *33333********  \n "
-	line03: 	.asciiz "*22222******222222*                                      *33333*         \n "
-   	line04: 	.asciiz "*22222*      *22222*                                     *33333********  \n "
-	line05: 	.asciiz "*22222*       *22222*        *************               *3333333333333* \n "
-	line06: 	.asciiz "*22222*       *22222*      **11111*****111*              *33333********  \n "
-	line07: 	.asciiz "*22222*       *22222*    **11111****                     *33333*         \n "
-	line08: 	.asciiz "*22222*       *22222*    *11111*                         *33333********  \n "
-	line09:	.asciiz "*22222*******222222*     *11111*                         *3333333333333* \n "
-	line10:	.asciiz "*2222222222222222*       *11111*                          *************  \n "
-	line11:	.asciiz "***************          *11111*                                         \n "
-	line12:	.asciiz "   -----                 *11111*                                         \n "
-	line13:	.asciiz "  /  o o \\               *11111*********                                 \n "
-	line14:	.asciiz "  \\    > /                 **111111***111*                               \n "
-	line15:	.asciiz "   -----                      ***********                dce.hust.edu.vn \n "
-endofline: .asciiz "\n"
+	line00: 	.asciiz "                                                *************  \n "
+	line01: 	.asciiz "**************                                 *3333333333333* \n "
+	line02: 	.asciiz "*222222222222222*                              *33333********  \n "
+	line03: 	.asciiz "*22222******222222*                            *33333*         \n "
+   	line04: 	.asciiz "*22222*      *22222*                           *33333********  \n "
+	line05: 	.asciiz "*22222*       *22222*        *************     *3333333333333* \n "
+	line06: 	.asciiz "*22222*       *22222*      **11111*****111*    *33333********  \n "
+	line07: 	.asciiz "*22222*       *22222*    **11111****           *33333*         \n "
+	line08: 	.asciiz "*22222*       *22222*    *11111*               *33333********  \n "
+	line09:	.asciiz "*22222*******222222*     *11111*               *3333333333333* \n "
+	line10:	.asciiz "*2222222222222222*       *11111*                *************  \n "
+	line11:	.asciiz "***************          *11111*                               \n "
+	line12:	.asciiz "   -----                 *11111*                               \n "
+	line13:	.asciiz "  /  o o \\               *11111*********                       \n "
+	line14:	.asciiz "  \\    > /                 **111111***111*                     \n "
+	line15:	.asciiz "   -----                      ***********     dce.hust.edu.vn  \n "
+endofline: .asciiz "\n\n"
 	
 ms1:	.asciiz " \n Input Color of D (0->9) : "
 ms2:	.asciiz	" \n Input Color of C (0->9) : "
 ms3:	.asciiz	" \n Input Color of E (0->9) : "
 	
-menu:	.asciiz "\n1. Show Image.\n2. Delete Color.\n3. Change Position.\n4. Change Color.\n5. Exit.\n>>> Chose Function: "
+menu1: .asciiz "\n1. Show Image."
+menu2:	.asciiz "\n2. Delete color."
+menu3:	.asciiz "\n3. Change Position."
+menu4: .asciiz "\n4. Change Color."
+menu5:	.asciiz "\n>>>> Chose Function:"
 ################################################################################
 .text
-	la	$s0, line00				# $s0 is address of line00
-	la	$s1, line15				# $s1 is address of line15
+	la	$s0, line00					# $s0 is address of line00
+	la	$s1, line15					# $s1 is address of line15
 	
-	li	$s2, '2'				# s2 is colof of D
-	li	$s3, '1'				# s3 is color of E
-	li	$s4, '3'				# s4 if color of C
+	li	$s2, '2'					# s2 is colof of D
+	li	$s3, '1'					# s3 is color of E
+	li	$s4, '3'					# s4 if color of C
 ################################################################################
 Menu:
-	li	$v0, 4					# Menu :
-	la	$a0, menu
+	li	$v0, 4						# Menu1 :
+	la	$a0, menu1
+	syscall
+	li	$v0, 4						# Menu2:
+	la	$a0, menu2
+	syscall
+	li	$v0, 4						# Menu3:
+	la	$a0, menu3
+	syscall
+	li	$v0, 4						# Menu4 :
+	la	$a0, menu4
+	syscall
+	li	$v0, 4						# Menu5:
+	la	$a0, menu5
 	syscall
 	
 	li	$v0, 12					
 	syscall
-	move	$t9, $v0				# t9 = v0 = function was chosen
+	move	$t9, $v0					# t9 = v0 = function was chosen
 	
-	beq	$t9, '5', EXIT
 	beq	$t9, '1', Case1
 	beq	$t9, '2', Case2
 	beq	$t9, '3', Case3
-	beq	$t9, '4', Case4	
+	beq	$t9, '4', Case4
+	beq	$t9, '5', EXIT	
 	
 	j 	Menu
 ################################################################################	
-Case1:							# Show Image		
+Case1	:							# Show Image		
 	
 	li 	$v0, 4						# ShowImage \n
 	la 	$a0, endofline
@@ -63,9 +79,9 @@ Case1:							# Show Image
 			li 	$v0, 4
 			move 	$a0, $t0
 			syscall
-		
-			addi 	$t0, $t0, 76			# t0 is next string, 76 is length of each string
-			ble 	$t0, $s1, Case1_Loop 		# until to last line (s1)
+			
+			addi 	$t0, $t0, 66			# t0 is next string, 66 is length of each string
+			ble 	$t0, $s1, Case1_Loop  		# until to last line (s1)
 	
 		jr 	$ra
 ################################################################################
@@ -85,13 +101,11 @@ Case2:								# Delete color
 		beq	$t3, $s2, PrintSpace			# if character if color, print space
 		beq	$t3, $s3, PrintSpace
 		beq	$t3, $s4, PrintSpace
-	
 		Print:  						# print character isn't color	
 			li	$v0, 11
 			move	$a0, $t3
 			syscall
 			j 	Continue
-	
 		PrintSpace:					# print space
 			li 	$t4, ' '
 			li	$v0, 11
@@ -100,9 +114,9 @@ Case2:								# Delete color
 		Continue:	
 			addi 	$t7, $t7, 1			# 
 			addi	$t0, $t0, 1			# 
-			ble 	$t7, 75, CountCharacter		# traverse all character in line
+			ble 	$t7, 65, CountCharacter		# traverse all character in line
 	
-		addi 	$t8, $t8, 76				# traverse whole lines
+		addi 	$t8, $t8, 66			# traverse whole lines
 		ble 	$t8, $s1, Case2_Loop
 	
 	j 	Menu
@@ -116,24 +130,23 @@ Case3				:				# Change position
 	Case3_Loop1:
 		li	$t0, '\0'				# t0 = null
 		sb 	$t0, 23($t8)				# divide line into 3 strings
-		sb	$t0, 48($t8)
+		sb	$t0, 45($t8)
 	
-		li	$t1, ' '				# delete enter at end of line
-		sb	$t1, 73($t8)
+		li	$t1, ' '				# replace \n at end of line by  '  ' 
+		sb	$t1, 63($t8)
 	
-		addi 	$t8, $t8, 76				# traverse whole lines
+		addi 	$t8, $t8, 66				# traverse whole lines
 		ble 	$t8, $s1, Case3_Loop1
 	
 		move	$t8, $s0
-	
 	Case3_Loop2:						
-		addi	$t8, $t8, 49				# Print E
+		addi	$t8, $t8, 46 				# Print E
 	
 		li 	$v0, 4
 		move 	$a0, $t8
 		syscall
 								
-		addi	$t8, $t8, -49				# Print C
+		addi	$t8, $t8, -46				# Print C
 		addi	$t8, $t8, 24
 	
 		li 	$v0, 4
@@ -150,20 +163,20 @@ Case3				:				# Change position
 		li	$a0, '\n'
 		syscall
 	
-		addi 	$t8, $t8, 76				# Traverse whole lines 
+		addi 	$t8, $t8, 66				# Traverse whole lines 
 		ble 	$t8, $s1, Case3_Loop2
 
-		# reset
+		# reset Image
 		move	$t8, $s0				# t8 = s0 = first line
 	Case3_Loop3:
 		li	$t0, ' '				# delete \0
 		sb 	$t0, 23($t8)
-		sb	$t0, 48($t8)
+		sb	$t0, 45($t8)
 		
 		li	$t1, '\n'				# recover '\n	
-		sb	$t1, 73($t8)
+		sb	$t1, 63($t8)
 		
-		addi 	$t8, $t8, 76				# traverse whole lines
+		addi 	$t8, $t8, 66				# traverse whole lines
 		ble 	$t8, $s1, Case3_Loop3
 	j 	Menu
 ###############################################################################
@@ -217,7 +230,7 @@ Case4				:				# Change color
 			bgt	$t7, 23, checkC	 		# if t7 > 23 check C
 			beq	$t3, $s2, fixD
 		checkC:
-			bgt	$t7, 48, checkE			# i > 48 thi kt E
+			bgt	$t7, 45, checkE			# i > 48 thi kt E
 			beq	$t3, $s3, fixC
 		checkE:
 			beq	$t3, $s4, fixE
@@ -235,9 +248,9 @@ Case4				:				# Change color
 	next4:	
 		addi 	$t7, $t7, 1				# i = i + 1
 		addi	$t0, $t0, 1				# duyet ki tu tiep thep
-		ble 	$t7, 75, x4				# duyet den ki tu cuoi
+		ble 	$t7, 65, x4				# duyet den ki tu cuoi
 			
-		addi 	$t8, $t8, 76				# traversa whole lines
+		addi 	$t8, $t8, 66				# traversa whole lines
 		ble 	$t8, $s1, Case4_Loop	
 	
 		jal 	ShowImage				
