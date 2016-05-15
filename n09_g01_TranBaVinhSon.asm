@@ -105,18 +105,18 @@ Case2:								# Delete color
 			li	$v0, 11
 			move	$a0, $t3
 			syscall
-			j 	Continue
+			j 	Case2_Continue
 		PrintSpace:					# print space
 			li 	$t4, ' '
 			li	$v0, 11
 			move	$a0, $t4 
 			syscall
-		Continue:	
+		Case2_Continue:	
 			addi 	$t7, $t7, 1			# 
 			addi	$t0, $t0, 1			# 
 			ble 	$t7, 65, CountCharacter		# traverse all character in line
 	
-		addi 	$t8, $t8, 66			# traverse whole lines
+		addi 	$t8, $t8, 66				# traverse whole lines
 		ble 	$t8, $s1, Case2_Loop
 	
 	j 	Menu
@@ -169,7 +169,7 @@ Case3				:				# Change position
 		# reset Image
 		move	$t8, $s0				# t8 = s0 = first line
 	Case3_Loop3:
-		li	$t0, ' '				# delete \0
+		li	$t0, ' '				# replace \0 by  ' '
 		sb 	$t0, 23($t8)
 		sb	$t0, 45($t8)
 		
@@ -190,8 +190,8 @@ Case4				:				# Change color
 		syscall
 		move	 $s5, $v0				# s5 is new color of D
 	
-		blt	$s5, '0', InputColorD			# check color (from 0 -> 9)
-		bgt	$s5, '9', InputColorD
+		blt	$s5, '0', InputColorD 			# check color (from 0 -> 9)
+		bgt	$s5, '9', InputColorD 
 	InputColorC:
 		li 	$v0, 4
 		la 	$a0, ms2
@@ -215,48 +215,48 @@ Case4				:				# Change color
 		blt	$s7, '0', InputColorE			# check color (from 0->9)
 		bgt	$s7, '9', InputColorE
 	
-	li 	$v0, 4						# print \n
+	li 	$v0, 4					
 	la 	$a0, endofline
 	syscall	
 	
-	move 	$t8, $s0					# t8 = s0 = first line
-	Case4_Loop:	
+	move 	$t8, $s0 					# t8 = s0 = first line
+	Case4_Loop:						# Loop is change new color
 		move 	$t0, $t8	
-		li	$t7, 0					
-		x4:	
+		li	$t7, 0					# t7 is counter
+		Case4_Loop_2:	
 			lb 	$t3, 0($t0)			# t3 save character in line
 
-		checkD:	
-			bgt	$t7, 23, checkC	 		# if t7 > 23 check C
-			beq	$t3, $s2, fixD
-		checkC:
-			bgt	$t7, 45, checkE			# i > 48 thi kt E
-			beq	$t3, $s3, fixC
-		checkE:
-			beq	$t3, $s4, fixE
-			j 	next4				# duyet ki tu tiep theo
+		CheckD:	
+			bgt	$t7, 23, CheckC 	 	# if t7 > 23 check C
+			beq	$t3, $s2, FixD 			# if t3= s2 FixD (s2 = current color of D)
+		CheckC:
+			bgt	$t7, 45, CheckE			# if t7 > 45 check E
+			beq	$t3, $s3, FixC			# if t3 = s3 FixC (s3 = current color of C)
+		CheckE:
+			beq	$t3, $s4, FixE			# s4 = current color of E
+			j 	Case4_Continue			# next character
 
-	fixD:  		
-		sb 	$s5, 0($t0)
-		j 	next4
-	fixC:
-		sb 	$s6, 0($t0)
-		j 	next4
-	fixE:	
-		sb 	$s7, 0($t0)
-		j 	next4
-	next4:	
-		addi 	$t7, $t7, 1				# i = i + 1
-		addi	$t0, $t0, 1				# duyet ki tu tiep thep
-		ble 	$t7, 65, x4				# duyet den ki tu cuoi
+		FixD:  		
+			sb 	$s5, 0($t0)			# t0 = s5 (= new color)
+			j 	Case4_Continue
+		FixC:
+			sb 	$s6, 0($t0)
+			j 	Case4_Continue
+		FixE:	
+			sb 	$s7, 0($t0)
+			j 	Case4_Continue
+		Case4_Continue:	
+			addi 	$t7, $t7, 1			# 
+			addi	$t0, $t0, 1			# 
+			ble 	$t7, 65, Case4_Loop_2		# traverse until and of line
 			
 		addi 	$t8, $t8, 66				# traversa whole lines
 		ble 	$t8, $s1, Case4_Loop	
 	
-		jal 	ShowImage				
-		# update color of character
-		move	$s2, $s5
-		move	$s3, $s6
-		move	$s4, $s7
+	jal 	ShowImage				
+	# update color of character
+	move	$s2, $s5
+	move	$s3, $s6
+	move	$s4, $s7
 	j 	Menu
 EXIT:
